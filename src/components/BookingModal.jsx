@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { MONTHS } from "../constants";
+import API_URL from "../config/api";
 
 export default function BookingModal({ slot, date, user, onBook, onClose }) {
   const [servicios, setServicios] = useState([]);
@@ -12,7 +13,7 @@ export default function BookingModal({ slot, date, user, onBook, onClose }) {
   const dateDisplay = `${parseInt(parts[2])} de ${MONTHS[parseInt(parts[1]) - 1]}`;
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/servicios")
+    fetch(`${API_URL}/api/servicios`)
       .then((r) => r.json())
       .then(setServicios)
       .catch(() => setErr("No se pudieron cargar los servicios."));
@@ -23,7 +24,7 @@ export default function BookingModal({ slot, date, user, onBook, onClose }) {
     if (!servicioId) { setErr("Selecciona un servicio."); return; }
     setLoad(true);
     try {
-      const res = await fetch("http://localhost:8080/api/citas", {
+      const res = await fetch(`${API_URL}/api/citas`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

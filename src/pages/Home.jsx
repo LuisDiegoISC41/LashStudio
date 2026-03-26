@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { ICONS } from "../constants";
 import ServiceModal from "../components/ServiceModal";
+import API_URL from "../config/api";
 
 export default function Home({ user }) {
   const [services, setServices] = useState([]);
@@ -17,7 +18,7 @@ export default function Home({ user }) {
   const cargarServicios = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8080/api/servicios");
+      const response = await fetch(`${API_URL}/api/servicios`);
       if (response.ok) {
         const data = await response.json();
         setServices(data);
@@ -35,8 +36,8 @@ export default function Home({ user }) {
   const handleSave = async (data) => {
     try {
       const url = data.id 
-        ? `http://localhost:8080/api/servicios/${data.id}`
-        : "http://localhost:8080/api/servicios";
+        ? `${API_URL}/api/servicios/${data.id}`
+        : `${API_URL}/api/servicios`;
       
       const method = data.id ? "PUT" : "POST";
       
@@ -71,7 +72,7 @@ export default function Home({ user }) {
     if (!confirm("¿Eliminar este servicio?")) return;
     
     try {
-      const response = await fetch(`http://localhost:8080/api/servicios/${id}`, {
+      const response = await fetch(`${API_URL}/api/servicios/${id}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${user.token}`

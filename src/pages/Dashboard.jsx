@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { MONTHS_SHORT } from "../constants";
+import API_URL from "../config/api";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 const pad = (n) => String(n).padStart(2, "0");
@@ -105,15 +106,15 @@ export default function Dashboard({ user }) {
 
     Promise.allSettled([
       // Citas del mes actual
-      fetch(`http://localhost:8080/api/citas/mes?mes=${mesStr}`, { headers: authHeaders(token) })
+      fetch(`${API_URL}/api/citas/mes?mes=${mesStr}`, { headers: authHeaders(token) })
         .then((r) => r.ok ? r.json() : []),
 
       // Clientes (solo admin puede ver todos)
-      fetch("http://localhost:8080/api/clientes", { headers: authHeaders(token) })
+      fetch(`${API_URL}/api/clientes`, { headers: authHeaders(token) })
         .then((r) => r.ok ? r.json() : []),
 
       // Servicios (público)
-      fetch("http://localhost:8080/api/servicios")
+      fetch(`${API_URL}/api/servicios`)
         .then((r) => r.ok ? r.json() : []),
     ]).then(([citasRes, clientesRes, serviciosRes]) => {
       setCitasMes(citasRes.status  === "fulfilled" ? citasRes.value  : []);

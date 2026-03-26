@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { MONTHS_SHORT } from "../constants";
 import EditPerfilModal from "../components/EditPerfilModal";
+import API_URL from "../config/api";
 
 function HistorialItem({ cita }) {
   const parts = cita.fecha.split("-");
@@ -36,7 +37,7 @@ export default function Perfil({ user }) {
 
   useEffect(() => {
     if (!user?.id) return;
-    fetch(`http://localhost:8080/api/citas/cliente/${user.id}`, {
+    fetch(`${API_URL}/api/citas/cliente/${user.id}`, {
       headers: { "Authorization": `Bearer ${user.token}` },
     })
       .then((r) => r.ok ? r.json() : [])

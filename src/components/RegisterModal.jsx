@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import API_URL from "../config/api";
 export default function RegisterModal({ onClose, onLogin }) {
   const [form, setForm] = useState({
     nombre: "", ap: "", am: "", tel: "", correo: "", pass: "", confirm: "",
@@ -16,7 +16,7 @@ export default function RegisterModal({ onClose, onLogin }) {
     if (form.pass.length < 6)       { setErr("Mínimo 6 caracteres.");          return; }
     setLoad(true);
     try {
-      const res = await fetch("http://localhost:8080/api/clientes/register", {
+      const res = await fetch(`${API_URL}/api/clientes/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -34,7 +34,7 @@ export default function RegisterModal({ onClose, onLogin }) {
         return;
       }
       // Auto-login para obtener el JWT
-      const loginRes = await fetch("http://localhost:8080/api/auth/login", {
+      const loginRes = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo: form.correo, password: form.pass }),

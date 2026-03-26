@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import API_URL from "../config/api";
 
 export default function Clientes({ user }) {
   const [query,    setQuery]    = useState("");
@@ -10,7 +11,7 @@ export default function Clientes({ user }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("http://localhost:8080/api/clientes", {
+      const res = await fetch(`${API_URL}/api/clientes`, {
         headers: {
           "Authorization": `Bearer ${user.token}`,
           "Content-Type": "application/json",

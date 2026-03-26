@@ -4,6 +4,7 @@ import { MONTHS, DAYS_H, WORK_H } from "../constants";
 import BookingModal from "../components/BookingModal";
 import CancelModal from "../components/CancelModal";
 import ReagendarModal from "../components/ReagendarModal";
+import API_URL from "../config/api";
 
 function pad(n) {
   return String(n).padStart(2, "0");
@@ -37,7 +38,7 @@ export default function Citas({ user, addNotif }) {
       setLoading(true);
       setError("");
       const mes = `${year}-${pad(month + 1)}`;
-      const response = await fetch(`http://localhost:8080/api/citas/mes?mes=${mes}`, {
+      const response = await fetch(`${API_URL}/api/citas/mes?mes=${mes}`, {
         headers: apiHeaders(user.token),
       });
       
@@ -142,7 +143,7 @@ export default function Citas({ user, addNotif }) {
 
   const handleCancel = async (cita) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/citas/${cita.id}`, {
+      const response = await fetch(`${API_URL}/api/citas/${cita.id}`, {
         method: "DELETE",
         headers: apiHeaders(user.token),
       });
@@ -180,7 +181,7 @@ export default function Citas({ user, addNotif }) {
 
   const handleReagendar = async (cita, fecha, hora) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/citas/${cita.id}`, {
+      const response = await fetch(`${API_URL}/api/citas/${cita.id}`, {
         method: "PUT",
         headers: apiHeaders(user.token),
         body: JSON.stringify({ fecha, hora }),

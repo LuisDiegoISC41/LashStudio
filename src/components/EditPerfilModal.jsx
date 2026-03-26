@@ -1,4 +1,5 @@
 import { useState } from "react";
+import API_URL from "../config/api";
 
 export default function EditPerfilModal({ form, setForm, user, onClose }) {
   const [local, setLocal] = useState({ ...form, password: "" });
@@ -13,7 +14,7 @@ export default function EditPerfilModal({ form, setForm, user, onClose }) {
     setErr("");
     setLoad(true);
     try {
-      const res = await fetch(`http://localhost:8080/api/clientes/${user.id}`, {
+      const res = await fetch(`${API_URL}/api/clientes/${user.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import API_URL from "../config/api";
 
 export default function LoginModal({ onClose, onLogin }) {
   const [correo, setCorreo] = useState("");
@@ -11,7 +12,7 @@ export default function LoginModal({ onClose, onLogin }) {
     setErr("");
     setLoad(true);
     try {
-      const res = await fetch("http://localhost:8080/api/auth/login", {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo, password: pass }),
