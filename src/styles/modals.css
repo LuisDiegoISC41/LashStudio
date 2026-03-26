@@ -1,0 +1,147 @@
+/* ── Overlay backdrop ── */
+.overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(26,10,40,.55);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+  animation: fadeIn .2s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── Modal card ── */
+.modal {
+  background: #fff;
+  border-radius: 20px;
+  width: 100%; max-width: 420px;
+  padding: 1.9rem;
+  box-shadow: 0 20px 60px rgba(122,79,148,.25);
+  animation: slideUp .3s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Modal header ── */
+.modal-logo { text-align: center; margin-bottom: 1.3rem; }
+.modal-logo h2 {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.6rem; color: var(--purple-dark);
+}
+.modal-logo p { font-size: .8rem; color: var(--gray); }
+
+/* ── Form fields ── */
+.fg { margin-bottom: .85rem; }
+
+.fg label {
+  display: block;
+  font-size: .74rem; font-weight: 600;
+  color: var(--purple-dark);
+  margin-bottom: .28rem;
+  letter-spacing: .04em;
+}
+
+.fg input,
+.fg select,
+.fg textarea {
+  width: 100%;
+  padding: .58rem .82rem;
+  border: 1.5px solid var(--gray-light);
+  border-radius: var(--radius-sm);
+  font-size: .87rem;
+  transition: var(--t); outline: none;
+  background: var(--white); color: var(--black);
+}
+
+.fg input:focus,
+.fg select:focus,
+.fg textarea:focus {
+  border-color: var(--purple-light);
+  box-shadow: 0 0 0 3px rgba(155,111,181,.12);
+}
+
+.fg textarea { resize: vertical; min-height: 70px; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .65rem;
+}
+
+/* ── Modal action buttons ── */
+.modal-actions { display: flex; gap: .65rem; margin-top: 1.3rem; }
+.modal-actions .btn-primary {
+  flex: 1; padding: .62rem;
+  font-size: .87rem;
+  border-radius: var(--radius-sm);
+}
+.modal-actions .btn-outline {
+  padding: .62rem 1rem;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Feedback messages ── */
+.err {
+  background: var(--danger-bg);
+  border: 1px solid #f5c6c2;
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  padding: .52rem .82rem;
+  font-size: .78rem;
+  margin-bottom: .85rem;
+}
+
+.ok {
+  background: var(--success-bg);
+  border: 1px solid #a5d6a7;
+  color: var(--success);
+  border-radius: var(--radius-sm);
+  padding: .52rem .82rem;
+  font-size: .78rem;
+  margin-bottom: .85rem;
+}
+
+.hint {
+  font-size: .7rem; color: var(--gray);
+  background: var(--purple-bg);
+  padding: .42rem .72rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: .75rem;
+}
+
+/* ── Booking info box ── */
+.book-info {
+  background: var(--purple-bg);
+  border-radius: var(--radius-sm);
+  padding: .75rem .9rem;
+  margin-bottom: 1rem;
+  border-left: 3px solid var(--purple-dark);
+}
+.book-info p {
+  font-size: .8rem; color: var(--purple-dark);
+  font-weight: 500; line-height: 1.7;
+}
+
+/* ── Cancel confirmation box ── */
+.confirm-danger {
+  background: var(--danger-bg);
+  border: 1px solid #f5c6c2;
+  border-radius: var(--radius-sm);
+  padding: .85rem 1rem; margin-bottom: 1rem;
+  text-align: center;
+}
+.confirm-danger p     { font-size: .85rem; color: var(--danger); font-weight: 500; }
+.confirm-danger small { font-size: .76rem; color: var(--gray); }
+
+/* ── Danger button ── */
+.btn-danger {
+  background: var(--danger); color: #fff;
+  border: none; padding: .62rem 1.3rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer; font-size: .87rem; font-weight: 500;
+  transition: var(--t);
+}
+.btn-danger:hover { background: #a93226; }

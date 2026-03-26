@@ -1,0 +1,32 @@
+@media (max-width: 700px) {
+  /* Calendario pasa a una columna */
+  .cal-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  /* Ocultar texto del logo en móvil */
+  .logo-text {
+    display: none;
+  }
+
+  /* Cards de servicios en una columna */
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Dashboard en una columna */
+  .dash-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stats en dos columnas en móvil */
+  .stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Perfil: stats en una columna */
+  .perfil-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}

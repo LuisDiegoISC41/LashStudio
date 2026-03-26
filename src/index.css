@@ -1,0 +1,12 @@
+/* ── Entry point: importa todos los módulos CSS en orden ── */
+
+@import './styles/variables.css';
+@import './styles/navbar.css';
+@import './styles/home.css';
+@import './styles/dashboard.css';
+@import './styles/citas.css';
+@import './styles/clientes.css';
+@import './styles/perfil.css';
+@import './styles/modals.css';
+@import './styles/notifications.css';
+@import './styles/responsive.css';

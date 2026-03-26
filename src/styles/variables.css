@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Dancing+Script:wght@500;700&display=swap');
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Design tokens ── */
+:root {
+  --purple:      #9b6fb5;
+  --purple-dark: #7a4f94;
+  --purple-light:#c9a8e0;
+  --purple-bg:   #f5eef9;
+
+  --gold:        #c9a84c;
+  --gold-light:  #e8cc7a;
+  --gold-dark:   #a07830;
+
+  --black:       #1a1a1a;
+  --white:       #fdfaff;
+  --gray:        #6b6b7b;
+  --gray-light:  #ede8f2;
+
+  --danger:      #c0392b;
+  --danger-bg:   #fdf2f2;
+  --success:     #27ae60;
+  --success-bg:  #e8f5e9;
+  --warn:        #e67e22;
+  --warn-bg:     #fef9e7;
+
+  --shadow:      0 4px 24px rgba(155,111,181,.13);
+  --shadow-lg:   0 8px 40px rgba(155,111,181,.22);
+  --radius:      14px;
+  --radius-sm:   8px;
+  --t:           .25s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Base ── */
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--black);
+  min-height: 100vh;
+}
+
+button, input, select, textarea {
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar        { width: 5px; }
+::-webkit-scrollbar-track  { background: var(--gray-light); }
+::-webkit-scrollbar-thumb  { background: var(--purple-light); border-radius: 99px; }
+
+/* ── Layout base ── */
+.main { padding-top: 66px; min-height: 100vh; }
