@@ -7,7 +7,7 @@ export default function Navbar({ page, setPage, user, onLogin, onRegister, onLog
   const pages = [
     ["home", "Inicio"],
     ["citas", "Agenda"],
-    ["dashboard", "Dashboard"],
+    ...(user?.role === "admin" ? [["dashboard", "Dashboard"]] : []),
     ...(user?.role === "admin" ? [["clientes", "Clientes"]] : []),
     ...(user ? [["perfil", "Mi Perfil"]] : []),
   ];
