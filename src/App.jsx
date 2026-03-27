@@ -23,10 +23,16 @@ export default function App() {
     setNotifs((p) => [{ id: Date.now().toString(), ...n, read: false }, ...p]);
 
   const handleLogin = (u) => {
+    console.log("✅ Login exitoso, usuario:", u);
     setUser(u);
     setShowLogin(false);
     setShowReg(false);
-    addNotif({ icon: "👋", color: "#27ae60", msg: `Bienvenida, ${u.nombre.split(" ")[0]}!`, time: "ahora" });
+    addNotif({ 
+      icon: "👋", 
+      color: "#27ae60", 
+      msg: `Bienvenida, ${u.nombre?.split(" ")[0] || u.correo?.split("@")[0]}!`, 
+      time: "ahora" 
+    });
   };
 
   const handleLogout = () => {
@@ -34,7 +40,24 @@ export default function App() {
     setPage("home");
     setShowNotifs(false);
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
+
+  // ✅ Recuperar sesión al cargar la app
+  useEffect(() => {
+    const savedToken = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
+    
+    if (savedToken && savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        console.log("🔄 Sesión recuperada:", userData);
+        setUser(userData);
+      } catch (e) {
+        console.error("Error al recuperar sesión:", e);
+      }
+    }
+  }, []);
 
   // Close notif panel on outside click
   useEffect(() => {
@@ -55,8 +78,8 @@ export default function App() {
       <main className="main">
         {page === "home"      && <Home user={user} />}
         {page === "citas"     && <Citas user={user} addNotif={addNotif} />}
-        {page === "dashboard" && user?.role === "admin" && <Dashboard  user={user}/>}
-        {page === "clientes" && user?.role === "admin" && <Clientes user={user} />}
+        {page === "dashboard" && user?.role === "admin" && <Dashboard user={user}/>}
+        {page === "clientes"  && user?.role === "admin" && <Clientes user={user} />}
         {page === "perfil"    && user  && <Perfil user={user} />}
         {page === "perfil"    && !user && <div style={{ textAlign: "center", padding: "4rem", color: "var(--gray)" }}>Inicia sesión para ver tu perfil.</div>}
       </main>

@@ -18,12 +18,31 @@ export default function LoginModal({ onClose, onLogin }) {
         body: JSON.stringify({ correo, password: pass }),
       });
       const data = await res.json();
+      
       if (!res.ok) {
         setErr(typeof data === "string" ? data : "Correo o contraseña incorrectos.");
       } else {
-        onLogin(data);
+        // ✅ Verificar la estructura de data
+        console.log("📦 Respuesta del backend:", data);
+        
+        // Asegurar que el objeto user tenga la estructura correcta
+        const userData = {
+          ...data,  // Copia todos los datos del backend
+          token: data.token || data.accessToken || null, // Asegurar token
+          role: data.role || data.tipo || "cliente", // Asegurar role
+        };
+        
+        console.log("👤 UserData a guardar:", userData);
+        
+        if (!userData.token) {
+          console.error("⚠️ No se recibió token del backend");
+          setErr("Error de autenticación: no se recibió token");
+        } else {
+          onLogin(userData);
+        }
       }
-    } catch {
+    } catch (error) {
+      console.error("❌ Error en login:", error);
       setErr("No se pudo conectar al servidor.");
     } finally {
       setLoad(false);
@@ -39,11 +58,19 @@ export default function LoginModal({ onClose, onLogin }) {
         </div>
         {err && <div className="err">{err}</div>}
         <form onSubmit={sub}>
-          <div className="fg"><label>Correo</label><input type="email" required autoFocus value={correo} onChange={e => setCorreo(e.target.value)} /></div>
-          <div className="fg"><label>Contraseña</label><input type="password" required value={pass} onChange={e => setPass(e.target.value)} /></div>
+          <div className="fg">
+            <label>Correo</label>
+            <input type="email" required autoFocus value={correo} onChange={e => setCorreo(e.target.value)} />
+          </div>
+          <div className="fg">
+            <label>Contraseña</label>
+            <input type="password" required value={pass} onChange={e => setPass(e.target.value)} />
+          </div>
           <div className="modal-actions">
             <button type="button" className="btn-outline" onClick={onClose}>Cancelar</button>
-            <button type="submit" className="btn-primary" disabled={load}>{load ? "Entrando..." : "Iniciar sesión"}</button>
+            <button type="submit" className="btn-primary" disabled={load}>
+              {load ? "Entrando..." : "Iniciar sesión"}
+            </button>
           </div>
         </form>
       </div>
