@@ -7,6 +7,7 @@
   border-bottom: 1px solid rgba(201,168,224,.25);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 1.75rem;
 }
 
@@ -23,6 +24,7 @@
   align-items: center;
   gap: .6rem;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .logo-icon {
@@ -50,8 +52,45 @@
   text-transform: uppercase;
 }
 
-/* ── Nav links ── */
-.nav-links { display: flex; gap: .05rem; }
+/* ── Hamburguesa button (mobile) ── */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 101;
+  flex-shrink: 0;
+}
+
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--purple-dark);
+  margin: 5px 0;
+  transition: var(--t);
+  border-radius: 2px;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* ── Nav links container (desktop) ── */
+.nav-links {
+  display: flex;
+  gap: .05rem;
+  transition: var(--t);
+}
 
 .nav-btn {
   background: none; border: none; cursor: pointer;
@@ -60,6 +99,7 @@
   border-radius: var(--radius-sm);
   transition: var(--t);
   position: relative;
+  white-space: nowrap;
 }
 
 .nav-btn::after {
@@ -71,13 +111,18 @@
   border-radius: 2px;
 }
 
-.nav-btn:hover                 { color: var(--purple-dark); }
+.nav-btn:hover { color: var(--purple-dark); }
 .nav-btn:hover::after,
-.nav-btn.active::after         { left: 10px; right: 10px; }
-.nav-btn.active                { color: var(--purple-dark); font-weight: 600; }
+.nav-btn.active::after { left: 10px; right: 10px; }
+.nav-btn.active { color: var(--purple-dark); font-weight: 600; }
 
 /* ── Right side ── */
-.nav-right { display: flex; align-items: center; gap: .6rem; }
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  flex-shrink: 0;
+}
 
 .btn-outline {
   background: none;
@@ -87,7 +132,9 @@
   border-radius: 50px;
   font-size: .82rem; font-weight: 500;
   cursor: pointer; transition: var(--t);
+  white-space: nowrap;
 }
+
 .btn-outline:hover {
   border-color: var(--purple-dark);
   background: var(--purple-bg);
@@ -101,8 +148,10 @@
   font-size: .82rem; font-weight: 500;
   cursor: pointer; transition: var(--t);
   box-shadow: 0 2px 10px rgba(122,79,148,.3);
+  white-space: nowrap;
 }
-.btn-primary:hover    { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(122,79,148,.4); }
+
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(122,79,148,.4); }
 .btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
 .user-chip {
@@ -113,6 +162,7 @@
   padding: .28rem .85rem;
   font-size: .82rem; font-weight: 500;
   color: var(--purple-dark);
+  white-space: nowrap;
 }
 
 .badge {
@@ -131,7 +181,9 @@
   padding: .28rem .65rem;
   border-radius: var(--radius-sm);
   transition: var(--t);
+  white-space: nowrap;
 }
+
 .btn-logout:hover { color: var(--danger); background: var(--danger-bg); }
 
 /* ── Notification bell ── */
@@ -140,7 +192,9 @@
   padding: .3rem; font-size: 1.1rem;
   border-radius: var(--radius-sm);
   transition: var(--t);
+  flex-shrink: 0;
 }
+
 .notif-btn:hover { background: var(--purple-bg); }
 
 .notif-dot {
@@ -149,4 +203,176 @@
   background: var(--danger);
   border-radius: 50%;
   border: 2px solid var(--white);
+}
+
+/* ============================================ */
+/* 📱 RESPONSIVE DESIGN */
+/* ============================================ */
+
+/* Tablets (768px - 1024px) */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 0 1.25rem;
+  }
+  
+  .nav-left {
+    gap: 1rem;
+  }
+  
+  .nav-btn {
+    padding: .42rem .65rem;
+    font-size: .8rem;
+  }
+  
+  .btn-outline,
+  .btn-primary {
+    padding: .4rem .9rem;
+    font-size: .78rem;
+  }
+  
+  .user-chip {
+    padding: .28rem .7rem;
+    font-size: .78rem;
+  }
+}
+
+/* Mobile landscape (768px) */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 1rem;
+  }
+  
+  /* Mostrar hamburguesa */
+  .hamburger {
+    display: block;
+  }
+  
+  /* Menú móvil */
+  .nav-links {
+    position: fixed;
+    top: 66px;
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - 66px);
+    background: rgba(253,250,255,.98);
+    backdrop-filter: blur(16px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem 1rem;
+    gap: 0.5rem;
+    transition: left 0.3s ease;
+    z-index: 99;
+    overflow-y: auto;
+  }
+  
+  .nav-links.active {
+    left: 0;
+  }
+  
+  .nav-btn {
+    width: 100%;
+    text-align: center;
+    padding: 0.85rem;
+    font-size: 1rem;
+    white-space: normal;
+  }
+  
+  .nav-btn::after {
+    display: none;
+  }
+  
+  .nav-btn.active {
+    background: var(--purple-bg);
+    border-radius: var(--radius-md);
+  }
+  
+  /* Ajustes de botones en móvil */
+  .nav-right {
+    gap: 0.4rem;
+  }
+  
+  .btn-outline,
+  .btn-primary {
+    padding: .35rem .75rem;
+    font-size: .75rem;
+  }
+  
+  .user-chip {
+    padding: .25rem .6rem;
+    font-size: .75rem;
+    gap: 0.3rem;
+  }
+  
+  .badge {
+    font-size: 0.55rem;
+    padding: 2px 5px;
+  }
+  
+  .btn-logout {
+    font-size: 0.7rem;
+    padding: .25rem .5rem;
+  }
+  
+  .logo-text {
+    font-size: 1rem;
+  }
+  
+  .logo-sub {
+    font-size: 0.5rem;
+  }
+  
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Mobile small (480px) */
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0 0.75rem;
+  }
+  
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .logo-text {
+    font-size: 0.9rem;
+  }
+  
+  .logo-sub {
+    font-size: 0.45rem;
+  }
+  
+  /* Ocultar texto de botones en móvil muy pequeño */
+  .btn-outline,
+  .btn-primary {
+    padding: .35rem .6rem;
+    font-size: 0.7rem;
+  }
+  
+  .user-chip {
+    padding: .2rem .5rem;
+    font-size: 0.7rem;
+  }
+  
+  .user-chip span {
+    display: none; /* Ocultar nombre en móvil pequeño, solo mostrar avatar o inicial */
+  }
+  
+  .badge {
+    display: none; /* Ocultar badge en móvil pequeño */
+  }
+  
+  .nav-links {
+    padding: 1.5rem 1rem;
+  }
+  
+  .nav-btn {
+    padding: 0.7rem;
+    font-size: 0.9rem;
+  }
 }

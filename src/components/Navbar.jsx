@@ -1,5 +1,9 @@
+import { useState } from 'react';
+
 export default function Navbar({ page, setPage, user, onLogin, onRegister, onLogout, notifs, showNotifs, setShowNotifs }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const unread = notifs.filter(n => !n.read).length;
+  
   const pages = [
     ["home", "Inicio"],
     ["citas", "Agenda"],
@@ -8,10 +12,19 @@ export default function Navbar({ page, setPage, user, onLogin, onRegister, onLog
     ...(user ? [["perfil", "Mi Perfil"]] : []),
   ];
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handlePageChange = (pageKey) => {
+    setPage(pageKey);
+    setIsMenuOpen(false); // Cerrar menú al seleccionar una página
+  };
+
   return (
     <nav className="navbar">
       <div className="nav-left">
-        <div className="logo" onClick={() => setPage("home")}>
+        <div className="logo" onClick={() => handlePageChange("home")}>
           <div className="logo-icon">
             <svg width="22" height="15" viewBox="0 0 22 15" fill="none">
               <path d="M1 13 Q5 3 11 5 Q15 6 21 1" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
@@ -27,9 +40,25 @@ export default function Navbar({ page, setPage, user, onLogin, onRegister, onLog
           </div>
         </div>
 
-        <div className="nav-links">
+        {/* Botón hamburguesa para móvil */}
+        <button 
+          className={`hamburger ${isMenuOpen ? 'active' : ''}`} 
+          onClick={toggleMenu}
+          aria-label="Menú de navegación"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        {/* Menú de navegación - responsive */}
+        <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
           {pages.map(([k, l]) => (
-            <button key={k} className={`nav-btn${page === k ? " active" : ""}`} onClick={() => setPage(k)}>
+            <button 
+              key={k} 
+              className={`nav-btn${page === k ? " active" : ""}`} 
+              onClick={() => handlePageChange(k)}
+            >
               {l}
             </button>
           ))}
@@ -38,14 +67,14 @@ export default function Navbar({ page, setPage, user, onLogin, onRegister, onLog
 
       <div className="nav-right">
         {user && (
-          <button className="notif-btn" onClick={() => setShowNotifs(v => !v)}>
+          <button className="notif-btn" onClick={() => setShowNotifs(v => !v)} aria-label="Notificaciones">
             🔔{unread > 0 && <span className="notif-dot" />}
           </button>
         )}
         {user ? (
           <>
             <div className="user-chip">
-              {user.nombre.split(" ")[0]}
+              <span className="user-name">{user.nombre.split(" ")[0]}</span>
               <span className="badge">{user.role === "admin" ? "Admin" : "Cliente"}</span>
             </div>
             <button className="btn-logout" onClick={onLogout}>Salir</button>
