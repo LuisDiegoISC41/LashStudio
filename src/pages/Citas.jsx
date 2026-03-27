@@ -5,7 +5,7 @@ import BookingModal from "../components/BookingModal";
 import CancelModal from "../components/CancelModal";
 import ReagendarModal from "../components/ReagendarModal";
 import API_URL from "../config/api";
-
+import { debugAuth } from "../utils/debugAuth";
 function pad(n) {
   return String(n).padStart(2, "0");
 }
@@ -30,6 +30,7 @@ export default function Citas({ user, addNotif }) {
   // Carga citas del mes desde la API
   useEffect(() => {
     if (!user) return;
+    debugAuth(user.token);
     cargarCitas();
   }, [year, month, user]);
 
