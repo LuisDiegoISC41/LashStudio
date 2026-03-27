@@ -1,4 +1,4 @@
-// Home.tsx - VERSIÓN MODIFICADA PARA USAR API
+// Home.tsx - Versión corregida
 import { useState, useEffect } from "react";
 import { ICONS } from "../constants";
 import ServiceModal from "../components/ServiceModal";
@@ -10,7 +10,7 @@ export default function Home({ user }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Cargar servicios desde la base de datos al iniciar
+  // Cargar servicios desde la base de datos al iniciar (SIN TOKEN - PÚBLICO)
   useEffect(() => {
     cargarServicios();
   }, []);
@@ -18,10 +18,17 @@ export default function Home({ user }) {
   const cargarServicios = async () => {
     try {
       setLoading(true);
+      setError("");
+      
+      // Endpoint público - NO necesita token
       const response = await fetch(`${API_URL}/api/servicios`);
+      
       if (response.ok) {
         const data = await response.json();
         setServices(data);
+      } else if (response.status === 401) {
+        // Si por alguna razón da 401, mostramos mensaje amigable
+        setError("Por favor inicia sesión para ver los servicios");
       } else {
         setError("Error al cargar servicios");
       }
@@ -34,6 +41,12 @@ export default function Home({ user }) {
   };
 
   const handleSave = async (data) => {
+    // Verificar que el usuario esté autenticado
+    if (!user?.token) {
+      setError("Debes iniciar sesión para realizar esta acción");
+      return;
+    }
+
     try {
       const url = data.id 
         ? `${API_URL}/api/servicios/${data.id}`
@@ -45,7 +58,7 @@ export default function Home({ user }) {
         method: method,
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${user.token}` // Importante: enviar token
+          "Authorization": `Bearer ${user.token}`
         },
         body: JSON.stringify({
           nombre: data.nombre,
@@ -55,7 +68,7 @@ export default function Home({ user }) {
       });
 
       if (response.ok) {
-        await cargarServicios(); // Recargar la lista actualizada
+        await cargarServicios();
         setModal(null);
         setError("");
       } else {
@@ -69,6 +82,11 @@ export default function Home({ user }) {
   };
 
   const handleDelete = async (id) => {
+    if (!user?.token) {
+      setError("Debes iniciar sesión para realizar esta acción");
+      return;
+    }
+    
     if (!confirm("¿Eliminar este servicio?")) return;
     
     try {
@@ -80,7 +98,7 @@ export default function Home({ user }) {
       });
       
       if (response.ok) {
-        await cargarServicios(); // Recargar lista después de eliminar
+        await cargarServicios();
       } else {
         setError("Error al eliminar el servicio");
       }
