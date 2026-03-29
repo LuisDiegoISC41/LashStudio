@@ -1,4 +1,3 @@
-// Home.tsx - Versión corregida
 import { useState, useEffect } from "react";
 import { ICONS } from "../constants";
 import ServiceModal from "../components/ServiceModal";
@@ -10,7 +9,9 @@ export default function Home({ user }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Cargar servicios desde la base de datos al iniciar (SIN TOKEN - PÚBLICO)
+  // ✅ Normalizamos la validación del ADMIN para que no falle por mayúsculas
+  const isAdmin = user?.role?.toUpperCase() === "ADMIN";
+
   useEffect(() => {
     cargarServicios();
   }, []);
@@ -19,16 +20,11 @@ export default function Home({ user }) {
     try {
       setLoading(true);
       setError("");
-      
-      // Endpoint público - NO necesita token
       const response = await fetch(`${API_URL}/api/servicios`);
       
       if (response.ok) {
         const data = await response.json();
         setServices(data);
-      } else if (response.status === 401) {
-        // Si por alguna razón da 401, mostramos mensaje amigable
-        setError("Por favor inicia sesión para ver los servicios");
       } else {
         setError("Error al cargar servicios");
       }
@@ -41,11 +37,7 @@ export default function Home({ user }) {
   };
 
   const handleSave = async (data) => {
-    // Verificar que el usuario esté autenticado
-    if (!user?.token) {
-      setError("Debes iniciar sesión para realizar esta acción");
-      return;
-    }
+    if (!user?.token) return;
 
     try {
       const url = data.id 
@@ -73,53 +65,41 @@ export default function Home({ user }) {
         setError("");
       } else {
         const errorData = await response.json();
-        setError(errorData.message || "Error al guardar el servicio");
+        alert(errorData.message || "Error al guardar el servicio");
       }
     } catch (error) {
-      setError("Error de conexión al servidor");
       console.error("Error guardando servicio:", error);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!user?.token) {
-      setError("Debes iniciar sesión para realizar esta acción");
-      return;
-    }
-    
-    if (!confirm("¿Eliminar este servicio?")) return;
+    if (!user?.token || !confirm("¿Eliminar este servicio?")) return;
     
     try {
       const response = await fetch(`${API_URL}/api/servicios/${id}`, {
         method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${user.token}`
-        }
+        headers: { "Authorization": `Bearer ${user.token}` }
       });
       
       if (response.ok) {
         await cargarServicios();
       } else {
-        setError("Error al eliminar el servicio");
+        alert("Error al eliminar el servicio");
       }
     } catch (error) {
-      setError("Error de conexión al servidor");
       console.error("Error eliminando servicio:", error);
     }
   };
 
-  // Mostrar mensaje de error si existe
-  if (error) {
-    return <div className="error-message">Error: {error}</div>;
-  }
-
-  // Mostrar loading mientras carga
-  if (loading && services.length === 0) {
-    return <div className="loading">Cargando servicios...</div>;
-  }
-
   return (
     <>
+      {/* Mensaje de error tipo Banner (No bloqueante) */}
+      {error && (
+        <div style={{ backgroundColor: '#fee2e2', color: '#dc2626', padding: '10px', textAlign: 'center', fontSize: '0.9rem' }}>
+          ⚠️ {error}
+        </div>
+      )}
+
       <div className="hero">
         <p className="eyebrow">✦ Estudio profesional de pestañas ✦</p>
         <h1 className="hero-title">
@@ -134,7 +114,9 @@ export default function Home({ user }) {
       <div className="section">
         <div className="sec-header">
           <h2 className="sec-title">Nuestros Servicios</h2>
-          {user?.role === "admin" && (
+          
+          {/* ✅ CORRECCIÓN: Botón "Nuevo Servicio" visible para Miriam */}
+          {isAdmin && (
             <button className="btn-add" onClick={() => setModal({})}>
               <svg width="12" height="12" viewBox="0 0 12 12">
                 <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -144,6 +126,10 @@ export default function Home({ user }) {
           )}
         </div>
 
+        {loading && services.length === 0 && (
+          <div className="loading" style={{ textAlign: 'center', padding: '2rem' }}>Cargando servicios...</div>
+        )}
+
         {services.length === 0 && !loading && (
           <p style={{ textAlign: "center", color: "var(--gray)", padding: "2rem" }}>
             No hay servicios disponibles.
@@ -152,7 +138,7 @@ export default function Home({ user }) {
 
         <div className="grid">
           {services.map((s, i) => (
-            <div key={s.id} className="card">
+            <div key={s.id || i} className="card">
               <div className="card-accent" />
               <div className="card-body">
                 <div className="s-icon">{ICONS[i % ICONS.length]}</div>
@@ -162,7 +148,9 @@ export default function Home({ user }) {
                   ${Number(s.precio).toLocaleString("es-MX")} <small>MXN</small>
                 </div>
               </div>
-              {user?.role === "admin" && (
+
+              {/* ✅ CORRECCIÓN: Botones de Editar/Eliminar para Miriam */}
+              {isAdmin && (
                 <div className="card-actions">
                   <button className="btn-edit" onClick={() => setModal(s)}>
                     ✏️ Editar
