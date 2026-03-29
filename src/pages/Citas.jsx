@@ -5,60 +5,25 @@ import CancelModal from "../components/CancelModal";
 import ReagendarModal from "../components/ReagendarModal";
 import API_URL from "../config/api";
 
-function pad(n: number): string {
-  return String(n).padStart(2, "0");
-}
+// --- Helpers limpios de TypeScript ---
+const pad = (n) => String(n).padStart(2, "0");
 
-function ds(y: number, m: number, d: number): string {
-  return `${y}-${pad(m + 1)}-${pad(d)}`;
-}
+const ds = (y, m, d) => `${y}-${pad(m + 1)}-${pad(d)}`;
 
-function apiHeaders(token: string) {
+function apiHeaders(token) {
   return { 
     "Content-Type": "application/json", 
     "Authorization": `Bearer ${token}` 
   };
 }
 
-interface User {
-  token: string;
-  role: string;
-  correo: string;
-  nombre: string;
-  id: string;
-}
-
-interface Cita {
-  id: string;
-  fecha: string;
-  hora: string;
-  cliente: string;
-  clienteId: string;
-  servicio: string;
-  status: string;
-}
-
-interface CitaResponse {
-  id: string;
-  fecha: string;
-  hora: string;
-  clienteNombre: string;
-  clienteId: string;
-  servicioNombre: string;
-}
-
-interface Props {
-  user: User | null;
-  addNotif: (notif: any) => void;
-}
-
-export default function Citas({ user, addNotif }: Props) {
+export default function Citas({ user, addNotif }) {
   const today = new Date();
 
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [selDay, setSelDay] = useState(today.getDate());
-  const [citas, setCitas] = useState<Cita[]>([]);
+  const [citas, setCitas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -80,10 +45,6 @@ export default function Citas({ user, addNotif }: Props) {
       setError("");
       const mes = `${year}-${pad(month + 1)}`;
       
-      console.log("📡 Fetching citas for month:", mes);
-      console.log("🔑 Token exists:", !!user.token);
-      console.log("🔑 Token preview:", user.token.substring(0, 30) + "...");
-      
       const response = await fetch(`${API_URL}/api/citas/mes?mes=${mes}`, {
         method: 'GET',
         headers: {
@@ -92,29 +53,22 @@ export default function Citas({ user, addNotif }: Props) {
         },
       });
       
-      console.log("📡 Response status:", response.status);
-      
       if (response.status === 401) {
-        console.error("❌ Token inválido o expirado");
         setError("Sesión expirada. Por favor, inicia sesión nuevamente.");
         return;
       }
       
       if (response.status === 403) {
-        console.error("❌ No tienes permisos para acceder a estas citas");
         setError("No tienes permisos para ver las citas");
         return;
       }
       
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("❌ Error response:", errorText);
         setError(`Error ${response.status}: No se pudieron cargar las citas`);
         return;
       }
       
-      const data: CitaResponse[] = await response.json();
-      console.log("✅ Citas recibidas:", data.length);
+      const data = await response.json();
       
       setCitas(data.map((c) => ({
         id:        c.id,
@@ -134,9 +88,9 @@ export default function Citas({ user, addNotif }: Props) {
     }
   };
 
-  const [bookSlot, setBookSlot] = useState<any>(null);
-  const [cancelCita, setCancelCita] = useState<Cita | null>(null);
-  const [reagendarCita, setReagendarCita] = useState<Cita | null>(null);
+  const [bookSlot, setBookSlot] = useState(null);
+  const [cancelCita, setCancelCita] = useState(null);
+  const [reagendarCita, setReagendarCita] = useState(null);
 
   /* ── Navegación de mes ── */
   const prevM = () => {
@@ -165,9 +119,9 @@ export default function Citas({ user, addNotif }: Props) {
       .map((c) => parseInt(c.fecha.split("-")[2]))
   );
 
-  const isToday = (d: number) =>
+  const isToday = (d) =>
     d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-  const isPast = (d: number) =>
+  const isPast = (d) =>
     new Date(year, month, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
   const slots = WORK_H.map((h) => ({
@@ -176,13 +130,13 @@ export default function Citas({ user, addNotif }: Props) {
     cita:   citasDay.find((x) => x.hora === h),
   }));
 
-  const canManage = (cita: Cita) =>
+  const canManage = (cita) =>
     user?.role === "admin" || (user && cita.clienteId === user.id);
 
   /* ── Acciones ── */
-  const handleBook = async (citaRes: any) => {
+  const handleBook = async (citaRes) => {
     try {
-      const nueva: Cita = {
+      const nueva = {
         id:        citaRes.id,
         fecha:     citaRes.fecha,
         hora:      citaRes.hora.slice(0, 5),
@@ -200,20 +154,15 @@ export default function Citas({ user, addNotif }: Props) {
       setBookSlot(null);
       await cargarCitas();
     } catch (error) {
-      console.error("Error al crear cita:", error);
-      addNotif({
-        icon: "❌", color: "#c0392b",
-        msg:  "Error al crear la cita",
-        time: "ahora",
-      });
+      addNotif({ icon: "❌", color: "#c0392b", msg: "Error al crear la cita", time: "ahora" });
     }
   };
 
-  const handleCancel = async (cita: Cita) => {
+  const handleCancel = async (cita) => {
     try {
       const response = await fetch(`${API_URL}/api/citas/${cita.id}`, {
         method: "DELETE",
-        headers: apiHeaders(user!.token),
+        headers: apiHeaders(user.token),
       });
       
       if (response.ok) {
@@ -223,40 +172,24 @@ export default function Citas({ user, addNotif }: Props) {
           msg:  `Cita cancelada: ${cita.cliente} — ${cita.fecha} ${cita.hora}`,
           time: "ahora",
         });
-      } else if (response.status === 403) {
-        addNotif({
-          icon: "⚠️", color: "#e67e22",
-          msg:  "No tienes permiso para cancelar esta cita",
-          time: "ahora",
-        });
       } else {
-        addNotif({
-          icon: "❌", color: "#c0392b",
-          msg:  "Error al cancelar la cita",
-          time: "ahora",
-        });
+        addNotif({ icon: "❌", color: "#c0392b", msg: "No se pudo cancelar", time: "ahora" });
       }
     } catch (error) {
-      console.error("Error cancelando cita:", error);
-      addNotif({
-        icon: "❌", color: "#c0392b",
-        msg:  "Error de conexión al cancelar",
-        time: "ahora",
-      });
+      addNotif({ icon: "❌", color: "#c0392b", msg: "Error de conexión", time: "ahora" });
     }
     setCancelCita(null);
   };
 
-  const handleReagendar = async (cita: Cita, fecha: string, hora: string) => {
+  const handleReagendar = async (cita, fecha, hora) => {
     try {
       const response = await fetch(`${API_URL}/api/citas/${cita.id}`, {
         method: "PUT",
-        headers: apiHeaders(user!.token),
+        headers: apiHeaders(user.token),
         body: JSON.stringify({ fecha, hora }),
       });
       
       if (response.ok) {
-        const citaActualizada = await response.json();
         setCitas((p) => p.map((c) => 
           c.id === cita.id 
             ? { ...c, fecha, hora: hora.slice(0, 5) } 
@@ -268,39 +201,25 @@ export default function Citas({ user, addNotif }: Props) {
           time: "ahora",
         });
       } else {
-        const errorData = await response.json();
-        addNotif({
-          icon: "❌", color: "#c0392b",
-          msg:  errorData || "Error al reagendar la cita",
-          time: "ahora",
-        });
+        addNotif({ icon: "❌", color: "#c0392b", msg: "Error al reagendar", time: "ahora" });
       }
     } catch (error) {
-      console.error("Error reagendando cita:", error);
-      addNotif({
-        icon: "❌", color: "#c0392b",
-        msg:  "Error de conexión al reagendar",
-        time: "ahora",
-      });
+      addNotif({ icon: "❌", color: "#c0392b", msg: "Error de conexión", time: "ahora" });
     }
     setReagendarCita(null);
   };
 
-  // Mostrar error si existe
   if (error && citas.length === 0) {
     return (
       <div className="citas-page">
         <div className="error-message" style={{ textAlign: "center", padding: "2rem" }}>
           <p>Error: {error}</p>
-          <button onClick={() => cargarCitas()} className="btn-primary">
-            Reintentar
-          </button>
+          <button onClick={() => cargarCitas()} className="btn-primary">Reintentar</button>
         </div>
       </div>
     );
   }
 
-  /* ── Render ── */
   return (
     <div className="citas-page">
       <div className="sec-header" style={{ marginBottom: "1.4rem" }}>
@@ -316,14 +235,9 @@ export default function Citas({ user, addNotif }: Props) {
         )}
       </div>
 
-      {loading && (
-        <div style={{ textAlign: "center", padding: "2rem" }}>
-          Cargando citas...
-        </div>
-      )}
+      {loading && <div style={{ textAlign: "center", padding: "2rem" }}>Cargando citas...</div>}
 
       <div className="cal-wrap">
-        {/* ── Calendario ── */}
         <div className="cal-card">
           <div className="cal-head">
             <button className="cal-nav" onClick={prevM}>‹</button>
@@ -357,7 +271,6 @@ export default function Citas({ user, addNotif }: Props) {
           </div>
         </div>
 
-        {/* ── Slots ── */}
         <div className="slots-card">
           <div className="slots-head">
             <h3>{selDay} de {MONTHS[month]}</h3>
@@ -373,7 +286,6 @@ export default function Citas({ user, addNotif }: Props) {
                 }}
               >
                 <span className="slot-t">{sl.hora}</span>
-
                 <div className="slot-i">
                   {sl.booked ? (
                     user?.role === "admin" ? (
@@ -387,42 +299,28 @@ export default function Citas({ user, addNotif }: Props) {
                         <div className="slot-svc">{sl.cita?.servicio}</div>
                       </>
                     ) : (
-                      <div className="slot-client" style={{ color: "var(--danger)", fontSize: ".75rem" }}>
-                        No disponible
-                      </div>
+                      <div className="slot-client" style={{ color: "var(--danger)", fontSize: ".75rem" }}>No disponible</div>
                     )
                   ) : (
                     <div style={{ color: "var(--success)", fontSize: ".75rem" }}>
-                      {user
-                        ? isPast(selDay)
-                          ? "Pasado"
-                          : "Disponible · clic para reservar"
-                        : "Inicia sesión para reservar"}
+                      {user ? (isPast(selDay) ? "Pasado" : "Disponible") : "Inicia sesión"}
                     </div>
                   )}
                 </div>
 
                 {sl.booked && sl.cita && canManage(sl.cita) && !isPast(selDay) && (
                   <div style={{ display: "flex", gap: "3px" }} onClick={(e) => e.stopPropagation()}>
-                    <button className="btn-reagendar" onClick={() => setReagendarCita(sl.cita!)}>
-                      ↩ Reagendar
-                    </button>
-                    <button className="btn-cancel-slot" onClick={() => setCancelCita(sl.cita!)}>
-                      ✕
-                    </button>
+                    <button className="btn-reagendar" onClick={() => setReagendarCita(sl.cita)}>↩</button>
+                    <button className="btn-cancel-slot" onClick={() => setCancelCita(sl.cita)}>✕</button>
                   </div>
                 )}
-
-                <span className={`slot-badge ${sl.booked ? "ocu" : "libre"}`}>
-                  {sl.booked ? "Ocupado" : "Libre"}
-                </span>
+                <span className={`slot-badge ${sl.booked ? "ocu" : "libre"}`}>{sl.booked ? "Ocupado" : "Libre"}</span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ── Modales ── */}
       {bookSlot && (
         <BookingModal
           slot={bookSlot}
