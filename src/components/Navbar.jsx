@@ -3,12 +3,16 @@ import { useState } from 'react';
 export default function Navbar({ page, setPage, user, onLogin, onRegister, onLogout, notifs, showNotifs, setShowNotifs }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const unread = notifs.filter(n => !n.read).length;
-  
+
+  // ✅ CORRECCIÓN 1: Normalizamos el rol a minúsculas para la comparación
+  const userRole = user?.role?.toLowerCase();
+  const isAdmin = userRole === "admin";
+
   const pages = [
     ["home", "Inicio"],
     ["citas", "Agenda"],
-    ...(user?.role === "admin" ? [["dashboard", "Dashboard"]] : []),
-    ...(user?.role === "admin" ? [["clientes", "Clientes"]] : []),
+    ...(isAdmin ? [["dashboard", "Dashboard"]] : []), // ✅ Ahora sí entrará aquí
+    ...(isAdmin ? [["clientes", "Clientes"]] : []),
     ...(user ? [["perfil", "Mi Perfil"]] : []),
   ];
 
@@ -18,7 +22,7 @@ export default function Navbar({ page, setPage, user, onLogin, onRegister, onLog
 
   const handlePageChange = (pageKey) => {
     setPage(pageKey);
-    setIsMenuOpen(false); // Cerrar menú al seleccionar una página
+    setIsMenuOpen(false); 
   };
 
   return (
@@ -40,7 +44,6 @@ export default function Navbar({ page, setPage, user, onLogin, onRegister, onLog
           </div>
         </div>
 
-        {/* Botón hamburguesa para móvil */}
         <button 
           className={`hamburger ${isMenuOpen ? 'active' : ''}`} 
           onClick={toggleMenu}
@@ -51,7 +54,6 @@ export default function Navbar({ page, setPage, user, onLogin, onRegister, onLog
           <span></span>
         </button>
 
-        {/* Menú de navegación - responsive */}
         <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
           {pages.map(([k, l]) => (
             <button 
@@ -75,7 +77,8 @@ export default function Navbar({ page, setPage, user, onLogin, onRegister, onLog
           <>
             <div className="user-chip">
               <span className="user-name">{user.nombre.split(" ")[0]}</span>
-              <span className="badge">{user.role === "admin" ? "Admin" : "Cliente"}</span>
+              {/* ✅ CORRECCIÓN 2: Usamos la constante isAdmin para mostrar el Badge correcto */}
+              <span className="badge">{isAdmin ? "Admin" : "Cliente"}</span>
             </div>
             <button className="btn-logout" onClick={onLogout}>Salir</button>
           </>
