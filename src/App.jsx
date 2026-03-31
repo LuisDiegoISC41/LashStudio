@@ -43,6 +43,8 @@ export default function App() {
     localStorage.removeItem("user");
   };
 
+  const isAdmin = user?.role?.toLowerCase() === "admin";
+
   // ✅ Recuperar sesión al cargar la app
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
@@ -78,8 +80,8 @@ export default function App() {
       <main className="main">
         {page === "home"      && <Home user={user} />}
         {page === "citas"     && <Citas user={user} addNotif={addNotif} />}
-        {page === "dashboard" && user?.role === "admin" && <Dashboard user={user}/>}
-        {page === "clientes"  && user?.role === "admin" && <Clientes user={user} />}
+        {page === "dashboard" && isAdmin && <Dashboard user={user}/>}
+        {page === "clientes"  && isAdmin && <Clientes user={user} />}
         {page === "perfil"    && user  && <Perfil user={user} />}
         {page === "perfil"    && !user && <div style={{ textAlign: "center", padding: "4rem", color: "var(--gray)" }}>Inicia sesión para ver tu perfil.</div>}
       </main>
