@@ -74,9 +74,9 @@ export default function Citas({ user, addNotif }) {
         id:        c.id,
         fecha:     c.fecha,
         hora:      c.hora.slice(0, 5),
-        cliente:   c.clienteNombre,
-        clienteId: c.clienteId,
-        servicio:  c.servicioNombre,
+        cliente:   c.cliente?.nombre ? `${c.cliente.nombre} ${c.cliente.apellidoPaterno || ''}`.trim() : "",
+        clienteId: c.idCliente || c.cliente?.id,
+        servicio:  c.servicio?.nombre || c.servicioNombre || "",
         status:    "confirmada",
       })));
       
@@ -130,8 +130,8 @@ export default function Citas({ user, addNotif }) {
     cita:   citasDay.find((x) => x.hora === h),
   }));
 
-  const canManage = (cita) =>
-    user?.role === "admin" || (user && cita.clienteId === user.id);
+  const isAdmin = user?.role?.toLowerCase() === "admin";
+  const canManage = (cita) => isAdmin || (user && cita.clienteId === user.id);
 
   /* ── Acciones ── */
   const handleBook = async (citaRes) => {
@@ -224,7 +224,7 @@ export default function Citas({ user, addNotif }) {
     <div className="citas-page">
       <div className="sec-header" style={{ marginBottom: "1.4rem" }}>
         <h2 className="sec-title">Agenda de Citas</h2>
-        {user?.role === "admin" && (
+        {isAdmin && (
           <span style={{
             fontSize: ".76rem", background: "var(--purple-bg)",
             padding: "4px 11px", borderRadius: "50px",
@@ -288,7 +288,7 @@ export default function Citas({ user, addNotif }) {
                 <span className="slot-t">{sl.hora}</span>
                 <div className="slot-i">
                   {sl.booked ? (
-                    user?.role === "admin" ? (
+                    isAdmin ? (
                       <>
                         <div className="slot-client">👤 {sl.cita?.cliente}</div>
                         <div className="slot-svc">{sl.cita?.servicio}</div>
