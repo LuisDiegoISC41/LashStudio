@@ -102,7 +102,8 @@ export default function Dashboard({ user }) {
 
   useEffect(() => {
     // 🔒 VALIDACIÓN DE SEGURIDAD: Solo admin puede cargar datos
-    if (!user || user.role !== 'admin') {
+    const isAdmin = user?.role?.toLowerCase() === 'admin';
+    if (!user || !isAdmin) {
       console.log("❌ Acceso denegado: No eres administrador");
       setLoading(false);
       setError("No tienes permisos para ver el dashboard");
@@ -202,7 +203,8 @@ export default function Dashboard({ user }) {
   }
 
   // Si no es admin, no mostrar nada (por seguridad)
-  if (!user || user.role !== 'admin') {
+  const isAdmin = user?.role?.toLowerCase() === 'admin';
+  if (!user || !isAdmin) {
     return null;
   }
 
