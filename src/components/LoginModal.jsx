@@ -82,7 +82,7 @@ export default function LoginModal({ onClose, onLogin }) {
               style={{
                 position: 'absolute',
                 right: '0.8rem',
-                top: '44px',
+                top: '27px',
                 border: 'none',
                 background: 'transparent',
                 cursor: 'pointer',
