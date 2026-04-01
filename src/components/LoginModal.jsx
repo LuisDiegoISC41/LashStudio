@@ -97,14 +97,16 @@ export default function LoginModal({ onClose, onLogin }) {
               aria-label={showPass ? 'Ocultar contraseña' : 'Mostrar contraseña'}
             >
               {showPass ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" clipRule="evenodd" d="M12 6.5C7.30558 6.5 3.32309 9.262 1.5 13C3.32309 16.738 7.30558 19.5 12 19.5C16.6944 19.5 20.6769 16.738 22.5 13C20.6769 9.262 16.6944 6.5 12 6.5ZM12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12C17 14.7614 14.7614 17 12 17Z" stroke="currentColor" strokeWidth="1.8"/>
-                  <path d="M3 3L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              ) : (
+
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1.5 12C3.32309 8.262 7.30558 5.5 12 5.5C16.6944 5.5 20.6769 8.262 22.5 12C20.6769 15.738 16.6944 18.5 12 18.5C7.30558 18.5 3.32309 15.738 1.5 12Z" stroke="currentColor" strokeWidth="1.8"/>
                   <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8"/>
+                </svg>
+                
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M12 6.5C7.30558 6.5 3.32309 9.262 1.5 13C3.32309 16.738 7.30558 19.5 12 19.5C16.6944 19.5 20.6769 16.738 22.5 13C20.6769 9.262 16.6944 6.5 12 6.5ZM12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12C17 14.7614 14.7614 17 12 17Z" stroke="currentColor" strokeWidth="1.8"/>
+                  <path d="M3 3L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               )}
             </button>
