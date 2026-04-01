@@ -25,6 +25,8 @@ export default function App() {
   const handleLogin = (u) => {
     console.log("✅ Login exitoso, usuario:", u);
     setUser(u);
+    localStorage.setItem('token', u.token);
+    localStorage.setItem('user', JSON.stringify(u));
     setShowLogin(false);
     setShowReg(false);
     addNotif({ 

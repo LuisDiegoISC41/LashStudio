@@ -38,6 +38,16 @@ export default function Perfil({ user }) {
   });
 
   useEffect(() => {
+    setForm({
+      nombre:   user?.nombre || "",
+      apellidoPaterno: user?.apellidoPaterno || "",
+      apellidoMaterno: user?.apellidoMaterno || "",
+      telefono: user?.telefono || "",
+      correo:   user?.correo || "",
+    });
+  }, [user]);
+
+  useEffect(() => {
     if (!user?.id) return;
     fetch(`${API_URL}/api/citas/cliente/${user.id}`, {
       headers: { "Authorization": `Bearer ${user.token}` },

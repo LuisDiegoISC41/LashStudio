@@ -28,9 +28,12 @@ export default function LoginModal({ onClose, onLogin }) {
         // Asegurar que el objeto user tenga la estructura correcta
         const userData = {
           token: data.token || data.accessToken,
-          // Buscamos role o rol, y lo pasamos a MAYÚSCULAS para que coincida con tus rutas
-          role: (data.role || data.rol || "CLIENTE").toUpperCase(), 
+          role: (data.role || data.rol || "CLIENTE").toUpperCase(),
           nombre: data.nombre || "Usuario",
+          apellidoPaterno: data.apellidoPaterno || data.Apellido_Paterno || "",
+          apellidoMaterno: data.apellidoMaterno || data.Apellido_Materno || "",
+          telefono: data.telefono || data.Telefono || "",
+          correo: data.correo || "",
           id: data.id || data.ID_Admin || data.ID_Cliente
         };
 
