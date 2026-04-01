@@ -4,6 +4,7 @@ import API_URL from "../config/api";
 export default function LoginModal({ onClose, onLogin }) {
   const [correo, setCorreo] = useState("");
   const [pass, setPass] = useState("");
+  const [showPass, setShowPass] = useState(false);
   const [err, setErr] = useState("");
   const [load, setLoad] = useState(false);
 
@@ -67,9 +68,30 @@ export default function LoginModal({ onClose, onLogin }) {
             <label>Correo</label>
             <input type="email" required autoFocus value={correo} onChange={e => setCorreo(e.target.value)} />
           </div>
-          <div className="fg">
+          <div className="fg" style={{ position: 'relative' }}>
             <label>Contraseña</label>
-            <input type="password" required value={pass} onChange={e => setPass(e.target.value)} />
+            <input
+              type={showPass ? 'text' : 'password'}
+              required
+              value={pass}
+              onChange={e => setPass(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPass(v => !v)}
+              style={{
+                position: 'absolute',
+                right: '0.8rem',
+                top: '44px',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                color: 'var(--purple-dark)'
+              }}
+              aria-label={showPass ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            >
+              {showPass ? '🙈' : '👁️'}
+            </button>
           </div>
           <div className="modal-actions">
             <button type="button" className="btn-outline" onClick={onClose}>Cancelar</button>
