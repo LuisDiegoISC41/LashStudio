@@ -69,7 +69,7 @@ export default function Perfil({ user }) {
           <div className="perfil-name">{user?.nombre || "Cliente"}</div>
           <div className="perfil-email">{user?.correo}</div>
           <div className="perfil-badge">
-            {user?.role === "admin" ? "Administradora" : "Cliente"}
+            {user?.role?.toLowerCase() === "admin" ? "Administradora" : "Cliente"}
           </div>
         </div>
         <button
