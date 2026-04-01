@@ -31,7 +31,9 @@ export default function Perfil({ user }) {
   const [editando, setEditando] = useState(false);
   const [form, setForm] = useState({
     nombre:   user?.nombre || "",
-    telefono: "",
+    apellidoPaterno: user?.apellidoPaterno || "",
+    apellidoMaterno: user?.apellidoMaterno || "",
+    telefono: user?.telefono || "",
     correo:   user?.correo || "",
   });
 

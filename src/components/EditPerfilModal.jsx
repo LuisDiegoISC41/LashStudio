@@ -9,37 +9,56 @@ export default function EditPerfilModal({ form, setForm, user, onClose }) {
 
   const set = (k, v) => setLocal((f) => ({ ...f, [k]: v }));
 
+  const isAdmin = user?.role?.toLowerCase() === "admin";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErr("");
     setLoad(true);
     try {
-      const res = await fetch(`${API_URL}/api/clientes/${user.id}`, {
+      const ruta = isAdmin ? "admins" : "clientes";
+      const payload = {
+        nombre: local.nombre,
+        apellidoPaterno: local.apellidoPaterno,
+        apellidoMaterno: local.apellidoMaterno,
+        correo: local.correo,
+      };
+
+      if (!isAdmin) payload.telefono = local.telefono;
+      if (local.password && local.password.trim() !== "") payload.password = local.password;
+
+      const res = await fetch(`${API_URL}/api/${ruta}/${user.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${user.token}`,
         },
-        body: JSON.stringify({
-          nombre:   local.nombre,
-          apellidoPaterno: local.apellidoPaterno,
-          apellidoMaterno: local.apellidoMaterno,
-          telefono: local.telefono,
-          correo:   local.correo,
-          password: local.password || null,
-        }),
+        body: JSON.stringify(payload),
       });
-      if (!res.ok) { setErr("No se pudo guardar."); return; }
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        setErr((errData && errData.message) || "No se pudo guardar.");
+        return;
+      }
+
+      const updated = await res.json();
       setForm((prev) => ({
         ...prev,
-        nombre: local.nombre,
-        apellidoPaterno: local.apellidoPaterno,
-        apellidoMaterno: local.apellidoMaterno,
-        telefono: local.telefono,
-        correo: local.correo,
+        nombre: updated.nombre || local.nombre,
+        apellidoPaterno: updated.apellidoPaterno || local.apellidoPaterno,
+        apellidoMaterno: updated.apellidoMaterno || local.apellidoMaterno,
+        correo: updated.correo || local.correo,
+        telefono: updated.telefono || local.telefono,
       }));
-      setTimeout(onClose, 900);
-    } catch {
+
+      setSaved(true);
+      setTimeout(() => {
+        setSaved(false);
+        onClose();
+      }, 900);
+    } catch (err) {
+      console.error(err);
       setErr("No se pudo conectar al servidor.");
     } finally {
       setLoad(false);
@@ -84,14 +103,17 @@ export default function EditPerfilModal({ form, setForm, user, onClose }) {
               onChange={(e) => set("apellidoMaterno", e.target.value)}
             />
           </div>
-          <div className="fg">
-            <label>Teléfono</label>
-            <input
-              maxLength={10}
-              value={local.telefono}
-              onChange={(e) => set("telefono", e.target.value)}
-            />
-          </div>
+          {!isAdmin && (
+            <div className="fg">
+              <label>Teléfono</label>
+              <input
+                maxLength={10}
+                value={local.telefono}
+                onChange={(e) => set("telefono", e.target.value)}
+              />
+            </div>
+          )}
+
           <div className="fg">
             <label>Correo electrónico</label>
             <input
