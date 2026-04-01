@@ -41,15 +41,18 @@ export default function Perfil({ user }) {
       headers: { "Authorization": `Bearer ${user.token}` },
     })
       .then((r) => r.ok ? r.json() : [])
-      .then((data) =>
+      .then((data) => {
+        const today = new Date().toISOString().split('T')[0];
         setMisCitas(data.map((c) => ({
-          id:      c.id,
-          fecha:   c.fecha,
-          hora:    c.hora.slice(0, 5),
+          id:       c.id,
+          fecha:    c.fecha,
+          hora:     c.hora.slice(0, 5),
           servicio: c.servicioNombre,
-          status:  "confirmada",
-        })))
-      )
+          status:   c.status
+            ? c.status.toLowerCase()
+            : (c.fecha < today ? "completada" : "confirmada"),
+        })));
+      })
       .catch(() => {});
   }, [user]);
 
