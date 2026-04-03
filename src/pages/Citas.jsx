@@ -3,6 +3,7 @@ import { MONTHS, DAYS_H, WORK_H } from "../constants";
 import BookingModal from "../components/BookingModal";
 import CancelModal from "../components/CancelModal";
 import ReagendarModal from "../components/ReagendarModal";
+import AdminBookingModal from "../components/AdminBookingModal";
 import API_URL from "../config/api";
 
 // --- Helpers limpios de TypeScript ---
@@ -91,6 +92,7 @@ export default function Citas({ user, addNotif }) {
   const [bookSlot, setBookSlot] = useState(null);
   const [cancelCita, setCancelCita] = useState(null);
   const [reagendarCita, setReagendarCita] = useState(null);
+  const [adminBook, setAdminBook] = useState(false);
 
   /* ── Navegación de mes ── */
   const prevM = () => {
@@ -224,15 +226,25 @@ export default function Citas({ user, addNotif }) {
     <div className="citas-page">
       <div className="sec-header" style={{ marginBottom: "1.4rem" }}>
         <h2 className="sec-title">Agenda de Citas</h2>
-        {isAdmin && (
-          <span style={{
-            fontSize: ".76rem", background: "var(--purple-bg)",
-            padding: "4px 11px", borderRadius: "50px",
-            border: "1px solid var(--purple-light)", color: "var(--purple-dark)",
-          }}>
-            Vista Admin
-          </span>
-        )}
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          {isAdmin && (
+            <span style={{
+              fontSize: ".76rem", background: "var(--purple-bg)",
+              padding: "4px 11px", borderRadius: "50px",
+              border: "1px solid var(--purple-light)", color: "var(--purple-dark)",
+            }}>
+              Vista Admin
+            </span>
+          )}
+          {isAdmin && (
+            <button className="btn-add" onClick={() => setAdminBook(true)} style={{ fontSize: "0.8rem", padding: "6px 12px" }}>
+              <svg width="12" height="12" viewBox="0 0 12 12">
+                <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              Nueva Cita
+            </button>
+          )}
+        </div>
       </div>
 
       {loading && <div style={{ textAlign: "center", padding: "2rem" }}>Cargando citas...</div>}
@@ -343,6 +355,21 @@ export default function Citas({ user, addNotif }) {
           citas={citas}
           onConfirm={(f, h) => handleReagendar(reagendarCita, f, h)}
           onClose={() => setReagendarCita(null)}
+        />
+      )}
+      {adminBook && (
+        <AdminBookingModal
+          user={user}
+          onBook={(cita) => {
+            addNotif({
+              icon: "📅", color: "#9b6fb5",
+              msg: `Nueva cita creada: ${cita.cliente?.nombre || 'Cliente'} — ${cita.servicio?.nombre || 'Servicio'} — ${cita.fecha} ${cita.hora}`,
+              time: "ahora",
+            });
+            setAdminBook(false);
+            cargarCitas();
+          }}
+          onClose={() => setAdminBook(false)}
         />
       )}
     </div>

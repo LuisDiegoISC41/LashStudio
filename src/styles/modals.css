@@ -145,3 +145,27 @@
   transition: var(--t);
 }
 .btn-danger:hover { background: #a93226; }
+
+/* ── Cliente search list ── */
+.cliente-list {
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid var(--gray-light);
+  border-radius: var(--radius);
+  margin-top: 0.5rem;
+}
+
+.cliente-item {
+  padding: 0.5rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--gray-light);
+  background: #fff;
+}
+
+.cliente-item:hover {
+  background: var(--purple-bg);
+}
+
+.cliente-item:last-child {
+  border-bottom: none;
+}

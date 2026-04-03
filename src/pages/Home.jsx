@@ -84,10 +84,12 @@ export default function Home({ user }) {
       if (response.ok) {
         await cargarServicios();
       } else {
-        alert("Error al eliminar el servicio");
+        const errorData = await response.json();
+        alert(errorData.message || "Error al eliminar el servicio");
       }
     } catch (error) {
       console.error("Error eliminando servicio:", error);
+      alert("Error de conexión al eliminar el servicio");
     }
   };
 
