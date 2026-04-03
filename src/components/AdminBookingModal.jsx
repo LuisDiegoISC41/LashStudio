@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MONTHS } from "../constants";
+import { MONTHS, WORK_H } from "../constants";
 import API_URL from "../config/api";
 
 export default function AdminBookingModal({ user, onBook, onClose }) {
@@ -123,12 +123,18 @@ export default function AdminBookingModal({ user, onBook, onClose }) {
               </div>
               <div className="fg">
                 <label>Hora</label>
-                <input
-                  type="time"
+                <select
                   required
                   value={hora}
                   onChange={(e) => setHora(e.target.value)}
-                />
+                >
+                  <option value="">Selecciona una hora...</option>
+                  {WORK_H.map((h) => (
+                    <option key={h} value={h}>
+                      {h} hrs
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="fg">
                 <label>Cliente</label>
