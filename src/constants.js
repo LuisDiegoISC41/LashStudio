@@ -1,7 +1,7 @@
 export const MONTHS = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
 export const MONTHS_SHORT = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 export const DAYS_H = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
-export const WORK_H = ["09:00","10:00","11:00","12:00","13:00","14:00","16:00","17:00","18:00","19:00"];
+export const WORK_H = ["08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00"];
 export const ICONS = ["✨","👁️","💫","🌿","💎","⭐"];
 
 export function pad(n) { return String(n).padStart(2, "0"); }
