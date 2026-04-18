@@ -140,8 +140,22 @@
 .slot-badge { font-size: .68rem; font-weight: 600; padding: 2px 7px; border-radius: 50px; }
 .slot-badge.libre    { background: var(--success-bg); color: var(--success); }
 .slot-badge.ocu      { background: var(--danger-bg);  color: var(--danger);  }
+.slot-badge.bloqueado { background: #f2d7d5; color: #b03a2e; }
 
 /* ── Slot action buttons ── */
+.btn-block-slot {
+  background: none;
+  border: 1px solid #c39ea5;
+  color: #893751;
+  border-radius: var(--radius-sm);
+  padding: 2px 7px;
+  font-size: .68rem;
+  cursor: pointer;
+  transition: var(--t);
+  margin-right: 3px;
+}
+.btn-block-slot:hover { background: #f7e8ec; }
+
 .btn-reagendar {
   background: none;
   border: 1px solid var(--purple-light);

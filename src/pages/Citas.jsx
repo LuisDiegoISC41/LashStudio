@@ -78,7 +78,8 @@ export default function Citas({ user, addNotif }) {
         cliente:   c.cliente?.nombre ? `${c.cliente.nombre} ${c.cliente.apellidoPaterno || ''}`.trim() : "",
         clienteId: c.idCliente || c.cliente?.id,
         servicio:  c.servicio?.nombre || c.servicioNombre || "",
-        status:    "confirmada",
+        status:    c.status ? c.status.toLowerCase() : "confirmada",
+        motivo:    c.motivo || "",
       })));
       
     } catch (error) {
@@ -93,6 +94,35 @@ export default function Citas({ user, addNotif }) {
   const [cancelCita, setCancelCita] = useState(null);
   const [reagendarCita, setReagendarCita] = useState(null);
   const [adminBook, setAdminBook] = useState(false);
+
+  const handleBlock = async (slot) => {
+    if (!window.confirm(`¿Marcar ${slot.hora} del ${selDate} como fuera de servicio?`)) return;
+    const motivo = window.prompt("Motivo (opcional):");
+
+    try {
+      const response = await fetch(`${API_URL}/api/citas`, {
+        method: "POST",
+        headers: apiHeaders(user.token),
+        body: JSON.stringify({
+          fecha: selDate,
+          hora: slot.hora,
+          status: "fuera",
+          motivo: motivo || null,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        addNotif({ icon: "❌", color: "#c0392b", msg: data.message || data.error || "No se pudo bloquear el horario", time: "ahora" });
+        return;
+      }
+
+      addNotif({ icon: "🔒", color: "#c9a84c", msg: `Horario ${slot.hora} del ${selDate} marcado fuera de servicio`, time: "ahora" });
+      cargarCitas();
+    } catch (error) {
+      addNotif({ icon: "❌", color: "#c0392b", msg: "Error de conexión al servidor", time: "ahora" });
+    }
+  };
 
   /* ── Navegación de mes ── */
   const prevM = () => {
@@ -113,11 +143,11 @@ export default function Citas({ user, addNotif }) {
   const selDate     = ds(year, month, selDay);
 
   const citasDay = citas.filter(
-    (c) => c.fecha === selDate && c.status === "confirmada"
+    (c) => c.fecha === selDate && (c.status === "confirmada" || c.status === "fuera")
   );
   const busyDays = new Set(
     citas
-      .filter((c) => c.fecha.startsWith(`${year}-${pad(month + 1)}`) && c.status === "confirmada")
+      .filter((c) => c.fecha.startsWith(`${year}-${pad(month + 1)}`) && (c.status === "confirmada" || c.status === "fuera"))
       .map((c) => parseInt(c.fecha.split("-")[2]))
   );
 
@@ -171,7 +201,9 @@ export default function Citas({ user, addNotif }) {
         setCitas((p) => p.filter((c) => c.id !== cita.id));
         addNotif({
           icon: "❌", color: "#c0392b",
-          msg:  `Cita cancelada: ${cita.cliente} — ${cita.fecha} ${cita.hora}`,
+          msg:  cita.status === "fuera"
+            ? `Horario desbloqueado: ${cita.fecha} ${cita.hora}`
+            : `Cita cancelada: ${cita.cliente} — ${cita.fecha} ${cita.hora}`,
           time: "ahora",
         });
       } else {
@@ -286,7 +318,7 @@ export default function Citas({ user, addNotif }) {
         <div className="slots-card">
           <div className="slots-head">
             <h3>{selDay} de {MONTHS[month]}</h3>
-            <p>{citasDay.length} cita{citasDay.length !== 1 ? "s" : ""} confirmada{citasDay.length !== 1 ? "s" : ""}</p>
+            <p>{citasDay.length} horario{citasDay.length !== 1 ? "s" : ""} ocupado{citasDay.length !== 1 ? "s" : ""}</p>
           </div>
           <div className="slots-list">
             {slots.map((sl) => (
@@ -300,7 +332,12 @@ export default function Citas({ user, addNotif }) {
                 <span className="slot-t">{sl.hora}</span>
                 <div className="slot-i">
                   {sl.booked ? (
-                    isAdmin ? (
+                    sl.cita?.status === "fuera" ? (
+                      <>
+                        <div className="slot-client" style={{ color: "var(--danger)", fontSize: ".75rem" }}>🔒 Fuera de servicio</div>
+                        {sl.cita.motivo && <div className="slot-svc">{sl.cita.motivo}</div>}
+                      </>
+                    ) : isAdmin ? (
                       <>
                         <div className="slot-client">👤 {sl.cita?.cliente}</div>
                         <div className="slot-svc">{sl.cita?.servicio}</div>
@@ -320,13 +357,25 @@ export default function Citas({ user, addNotif }) {
                   )}
                 </div>
 
-                {sl.booked && sl.cita && canManage(sl.cita) && !isPast(selDay) && (
+                {sl.booked && sl.cita && canManage(sl.cita) && !isPast(selDay) && sl.cita.status !== "fuera" && (
                   <div style={{ display: "flex", gap: "3px" }} onClick={(e) => e.stopPropagation()}>
                     <button className="btn-reagendar" onClick={() => setReagendarCita(sl.cita)}>↩</button>
                     <button className="btn-cancel-slot" onClick={() => setCancelCita(sl.cita)}>✕</button>
                   </div>
                 )}
-                <span className={`slot-badge ${sl.booked ? "ocu" : "libre"}`}>{sl.booked ? "Ocupado" : "Libre"}</span>
+
+                {!sl.booked && isAdmin && !isPast(selDay) && (
+                  <button
+                    className="btn-block-slot"
+                    onClick={(e) => { e.stopPropagation(); handleBlock(sl); }}
+                  >
+                    🔒 Bloquear
+                  </button>
+                )}
+
+                <span className={`slot-badge ${sl.booked ? (sl.cita?.status === "fuera" ? "bloqueado" : "ocu") : "libre"}`}>
+                  {sl.booked ? (sl.cita?.status === "fuera" ? "Fuera de servicio" : "Ocupado") : "Libre"}
+                </span>
               </div>
             ))}
           </div>
