@@ -335,7 +335,7 @@ export default function Citas({ user, addNotif }) {
                     sl.cita?.status === "fuera" ? (
                       <>
                         <div className="slot-client" style={{ color: "var(--danger)", fontSize: ".75rem" }}>🔒 Sin servicio</div>
-                        {sl.cita.motivo && <div className="slot-svc">{sl.cita.motivo}</div>}
+                        {isAdmin && sl.cita.motivo && <div className="slot-svc">{sl.cita.motivo}</div>}
                       </>
                     ) : isAdmin ? (
                       <>
