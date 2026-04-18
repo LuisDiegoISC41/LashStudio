@@ -11,6 +11,7 @@ export default function AdminBookingModal({ user, onBook, onClose }) {
   const [clienteQuery, setClienteQuery] = useState("");
   const [fecha, setFecha] = useState("");
   const [hora, setHora] = useState("");
+  const [ocupadas, setOcupadas] = useState(new Set());
   const [err, setErr] = useState("");
   const [ok, setOk] = useState(false);
   const [load, setLoad] = useState(false);
@@ -22,6 +23,42 @@ export default function AdminBookingModal({ user, onBook, onClose }) {
       .then(setServicios)
       .catch(() => setErr("No se pudieron cargar los servicios."));
   }, []);
+
+  useEffect(() => {
+    if (!fecha) {
+      setOcupadas(new Set());
+      return;
+    }
+
+    const abortController = new AbortController();
+    fetch(`${API_URL}/api/citas?fecha=${encodeURIComponent(fecha)}`, {
+      headers: {
+        "Authorization": `Bearer ${user.token}`,
+        "Content-Type": "application/json",
+      },
+      signal: abortController.signal,
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error("No se pudieron cargar los horarios.");
+        }
+        const data = await res.json();
+        const ocupadasHoy = new Set(
+          data
+            .filter((c) => c.status === "confirmada" || c.status === "fuera")
+            .map((c) => c.hora.slice(0, 5))
+        );
+        setOcupadas(ocupadasHoy);
+      })
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          console.error("Error cargando horarios ocupados:", error);
+          setOcupadas(new Set());
+        }
+      });
+
+    return () => abortController.abort();
+  }, [fecha, user.token]);
 
   const loadClientes = async (query) => {
     if (!query.trim()) {
@@ -118,7 +155,7 @@ export default function AdminBookingModal({ user, onBook, onClose }) {
                   type="date"
                   required
                   value={fecha}
-                  onChange={(e) => setFecha(e.target.value)}
+                  onChange={(e) => { setFecha(e.target.value); setHora(""); }}
                 />
               </div>
               <div className="fg">
@@ -129,12 +166,17 @@ export default function AdminBookingModal({ user, onBook, onClose }) {
                   onChange={(e) => setHora(e.target.value)}
                 >
                   <option value="">Selecciona una hora...</option>
-                  {WORK_H.map((h) => (
+                  {WORK_H.filter((h) => !ocupadas.has(h)).map((h) => (
                     <option key={h} value={h}>
                       {h} hrs
                     </option>
                   ))}
                 </select>
+                {fecha && WORK_H.filter((h) => !ocupadas.has(h)).length === 0 && (
+                  <div style={{ marginTop: '0.5rem', color: '#b03a2e', fontSize: '0.9rem' }}>
+                    No hay horarios disponibles para esta fecha.
+                  </div>
+                )}
               </div>
               <div className="fg">
                 <label>Cliente</label>
