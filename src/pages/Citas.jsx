@@ -357,9 +357,11 @@ export default function Citas({ user, addNotif }) {
                   )}
                 </div>
 
-                {sl.booked && sl.cita && canManage(sl.cita) && !isPast(selDay) && sl.cita.status !== "fuera" && (
+                {sl.booked && sl.cita && canManage(sl.cita) && !isPast(selDay) && (
                   <div style={{ display: "flex", gap: "3px" }} onClick={(e) => e.stopPropagation()}>
-                    <button className="btn-reagendar" onClick={() => setReagendarCita(sl.cita)}>↩</button>
+                    {sl.cita.status !== "fuera" && (
+                      <button className="btn-reagendar" onClick={() => setReagendarCita(sl.cita)}>↩</button>
+                    )}
                     <button className="btn-cancel-slot" onClick={() => setCancelCita(sl.cita)}>✕</button>
                   </div>
                 )}
