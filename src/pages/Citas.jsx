@@ -334,7 +334,7 @@ export default function Citas({ user, addNotif }) {
                   {sl.booked ? (
                     sl.cita?.status === "fuera" ? (
                       <>
-                        <div className="slot-client" style={{ color: "var(--danger)", fontSize: ".75rem" }}>🔒 Fuera de servicio</div>
+                        <div className="slot-client" style={{ color: "var(--danger)", fontSize: ".75rem" }}>🔒 Sin servicio</div>
                         {sl.cita.motivo && <div className="slot-svc">{sl.cita.motivo}</div>}
                       </>
                     ) : isAdmin ? (
@@ -374,7 +374,7 @@ export default function Citas({ user, addNotif }) {
                 )}
 
                 <span className={`slot-badge ${sl.booked ? (sl.cita?.status === "fuera" ? "bloqueado" : "ocu") : "libre"}`}>
-                  {sl.booked ? (sl.cita?.status === "fuera" ? "Fuera de servicio" : "Ocupado") : "Libre"}
+                  {sl.booked ? (sl.cita?.status === "fuera" ? "Sin servicio" : "Ocupado") : "Libre"}
                 </span>
               </div>
             ))}
