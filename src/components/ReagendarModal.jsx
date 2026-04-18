@@ -16,7 +16,7 @@ export default function ReagendarModal({ cita, citas, onConfirm, onClose }) {
   // Horarios ya ocupados en la nueva fecha (excluyendo la cita actual)
   const ocupadas = new Set(
     citas
-      .filter((c) => c.fecha === fecha && c.id !== cita.id && c.status === "confirmada")
+      .filter((c) => c.fecha === fecha && c.id !== cita.id && (c.status === "confirmada" || c.status === "fuera"))
       .map((c) => c.hora)
   );
 
