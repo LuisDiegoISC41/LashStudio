@@ -46,17 +46,25 @@ export default function Home({ user }) {
       
       const method = data.id ? "PUT" : "POST";
       
+      // Si hay formData (con imagen), usar FormData, sino JSON normal
+      const isFormData = data.formData;
+      const body = isFormData ? data.formData : JSON.stringify({
+        nombre: data.nombre,
+        descripcion: data.descripcion,
+        precio: data.precio
+      });
+      
+      const headers = isFormData ? {
+        "Authorization": `Bearer ${user.token}`
+      } : {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${user.token}`
+      };
+      
       const response = await fetch(url, {
         method: method,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${user.token}`
-        },
-        body: JSON.stringify({
-          nombre: data.nombre,
-          descripcion: data.descripcion,
-          precio: data.precio
-        })
+        headers: headers,
+        body: body
       });
 
       if (response.ok) {
@@ -143,6 +151,15 @@ export default function Home({ user }) {
             <div key={s.id || i} className="card">
               <div className="card-accent" />
               <div className="card-body">
+                {s.imagen && (
+                  <div className="s-image">
+                    <img 
+                      src={`${API_URL}/uploads/${s.imagen}`} 
+                      alt={s.nombre} 
+                      style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem' }}
+                    />
+                  </div>
+                )}
                 <div className="s-icon">{ICONS[i % ICONS.length]}</div>
                 <div className="s-name">{s.nombre}</div>
                 <div className="s-desc">{s.descripcion}</div>
