@@ -8,7 +8,6 @@ import Dashboard     from "./pages/Dashboard";
 import Citas         from "./pages/Citas";
 import Clientes      from "./pages/Clientes";
 import Perfil        from "./pages/Perfil";
-import { INIT_NOTIFS } from "./constants";
 
 export default function App() {
   const [page, setPage] = useState("home");
@@ -16,7 +15,7 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showReg, setShowReg] = useState(false);
   const [showNotifs, setShowNotifs] = useState(false);
-  const [notifs, setNotifs] = useState(INIT_NOTIFS);
+  const [notifs, setNotifs] = useState([]);
   const ref = useRef(null);
 
   const addNotif = (n) =>
