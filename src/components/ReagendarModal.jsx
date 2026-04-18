@@ -63,9 +63,9 @@ export default function ReagendarModal({ cita, citas, onConfirm, onClose }) {
               onChange={(e) => setHora(e.target.value)}
             >
               <option value="">Selecciona un horario...</option>
-              {WORK_H.map((h) => (
-                <option key={h} value={h} disabled={ocupadas.has(h)}>
-                  {h}{ocupadas.has(h) ? " — Ocupado" : ""}
+              {WORK_H.filter((h) => !ocupadas.has(h)).map((h) => (
+                <option key={h} value={h}>
+                  {h}
                 </option>
               ))}
             </select>
