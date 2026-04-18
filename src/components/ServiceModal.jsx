@@ -104,6 +104,8 @@ export default function ServiceModal({ service, onSave, onClose }) {
               </div>
             )}
           </div>
+
+          <div className="modal-actions">
             <button type="button" className="btn-outline" onClick={onClose}>
               Cancelar
             </button>
