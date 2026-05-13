@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lash-studio-hykj.vercel.app/sitemap.xml
